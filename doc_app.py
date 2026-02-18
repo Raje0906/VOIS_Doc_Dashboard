@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from rag_service import RAGService
 from pdf_service import PDFReportGenerator
 from calendar_service import CalendarService
