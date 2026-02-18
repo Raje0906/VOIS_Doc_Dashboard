@@ -20,13 +20,26 @@ class CalendarService:
 
     def authenticate(self):
         """Authenticate with Google Calendar API"""
-        if os.path.exists(self.token_path):
+        import json
+        
+        # 1. Try Loading Token from Environment (for Vercel)
+        token_json_env = os.getenv("GOOGLE_TOKEN_JSON")
+        if token_json_env:
+            try:
+                info = json.loads(token_json_env)
+                self.creds = Credentials.from_authorized_user_info(info, SCOPES)
+            except Exception as e:
+                print(f"Error loading token from env: {e}")
+        
+        # 2. Try Loading Token from File (Local)
+        if not self.creds and os.path.exists(self.token_path):
             try:
                 self.creds = Credentials.from_authorized_user_file(self.token_path, SCOPES)
             except Exception as e:
                 print(f"Error loading token.json: {e}")
                 self.creds = None
 
+        # 3. Refresh if expired
         if not self.creds or not self.creds.valid:
             if self.creds and self.creds.expired and self.creds.refresh_token:
                 try:
@@ -35,8 +48,16 @@ class CalendarService:
                     print(f"Error refreshing token: {e}")
                     self.creds = None
             
+            # 4. If still no valid creds, try OAuth flow (Local only)
             if not self.creds:
-                if os.path.exists(self.credentials_path):
+                # Check Env for Credentials first
+                creds_json_env = os.getenv("GOOGLE_CREDENTIALS_JSON")
+                
+                if creds_json_env:
+                     # We cannot run InstalledAppFlow on Vercel (headless), so this path is mostly for local env vars
+                     # But effectively, if we don't have a valid token on Vercel, we can't do much.
+                     print("Warning: No valid token found in env. Cannot run auth flow in headless environment.")
+                elif os.path.exists(self.credentials_path):
                     try:
                         flow = InstalledAppFlow.from_client_secrets_file(
                             self.credentials_path, SCOPES)
