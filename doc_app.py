@@ -23,7 +23,10 @@ pdf_generator = PDFReportGenerator()
 calendar_service = CalendarService() # Will print warning if credentials missing
 
 # Initialize DB
-init_db()
+try:
+    init_db()
+except Exception as e:
+    print(f"Error initializing DB: {e}")
 
 @app.route('/')
 def index():

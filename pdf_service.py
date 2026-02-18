@@ -3,9 +3,13 @@ import os
 
 class PDFReportGenerator:
     def __init__(self, output_dir="static/reports"):
-        self.output_dir = output_dir
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        # On Vercel, we can only write to /tmp
+        if os.environ.get('VERCEL') == '1':
+            self.output_dir = "/tmp"
+        else:
+            self.output_dir = output_dir
+            if not os.path.exists(self.output_dir):
+                os.makedirs(self.output_dir)
 
     def generate_prescription_report(self, analysis_text, patient_name, doctor_name, prescription_text):
         pdf = FPDF()

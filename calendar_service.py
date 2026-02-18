@@ -62,9 +62,10 @@ class CalendarService:
                         flow = InstalledAppFlow.from_client_secrets_file(
                             self.credentials_path, SCOPES)
                         self.creds = flow.run_local_server(port=0)
-                        # Save the credentials for the next run
-                        with open(self.token_path, 'w') as token:
-                            token.write(self.creds.to_json())
+                        # Save the credentials for the next run (SKIP on Vercel)
+                        if os.environ.get('VERCEL') != '1':
+                            with open(self.token_path, 'w') as token:
+                                token.write(self.creds.to_json())
                     except Exception as e:
                         print(f"Error during OAuth flow: {e}")
                         return
