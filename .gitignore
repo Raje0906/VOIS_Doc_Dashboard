@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+token.json
+credentials.json
+patients.db
+
+# Exclude Patient App
+patient_app.py
+
+# Exclude generated reports
+static/reports/*.pdf

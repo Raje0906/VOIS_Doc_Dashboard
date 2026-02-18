@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - CKD Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-user-md"></i> CKD<span class="highlight">Assist</span>
+            </div>
+            <nav class="nav-links">
+                <button class="nav-btn active" data-tab="patients" onclick="switchTab('patients')">
+                    <i class="fas fa-users"></i> Patients
+                </button>
+                <button class="nav-btn" data-tab="ai-consultant" onclick="switchTab('ai-consultant')">
+                    <i class="fas fa-robot"></i> AI Consultant
+                </button>
+                <button class="nav-btn" data-tab="medicine" onclick="switchTab('medicine')">
+                    <i class="fas fa-pills"></i> Medicine Recs
+                </button>
+
+                <button class="nav-btn" data-tab="calendar" onclick="switchTab('calendar')">
+                    <i class="fas fa-calendar-alt"></i> Calendar
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Patient Section -->
+            <section id="patients" class="tab-content active">
+                <header>
+                    <h1>My Patients</h1>
+                    <p>Overview of patient records and history.</p>
+                </header>
+                <div class="patient-list" id="patient-list-container">
+                    <!-- Populated by JS -->
+                    <div class="loading">Loading patients...</div>
+                </div>
+
+                <!-- Patient Details Modal -->
+                <div id="patient-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal()">&times;</span>
+                        <h2 id="modal-patient-name">Patient Name</h2>
+                        <div class="modal-body">
+                            <p><strong>Age:</strong> <span id="modal-patient-age"></span></p>
+                            <p><strong>Last Visit:</strong> <span id="modal-patient-visit"></span></p>
+                            <div class="history-box">
+                                <h3>Medical History</h3>
+                                <p id="modal-patient-history"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Consultant Section -->
+            <section id="ai-consultant" class="tab-content">
+                <header>
+                    <h1>AI Medical Consultant</h1>
+                    <p>Ask complex queries regarding CKD and get RAG-supported answers.</p>
+                </header>
+                <div class="chat-interface">
+                    <div class="chat-history" id="chat-history">
+                        <div class="message system">
+                            Hello Dr. How can I assist you with patient diagnosis or research today?
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-input-box" placeholder="Ask a question..."
+                            onkeypress="handleEnter(event)">
+                        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Medicine Recommendation Section -->
+            <section id="medicine" class="tab-content">
+                <header>
+                    <h1>Medicine Recommendations</h1>
+                    <p>Get AI-suggested medicines for specific conditions (RAG-verified).</p>
+                </header>
+                <div class="rx-container"> <!-- Reuse container style -->
+                    <div class="rx-input">
+                        <h3>Condition / Diagnosis</h3>
+                        <textarea id="med-condition" placeholder="e.g. Stage 3 CKD with Hypertension..."></textarea>
+                        <button class="action-btn" onclick="getMedicineRecommendations()">Get Recommendations</button>
+                    </div>
+                    <div class="rx-output">
+                        <h3>Recommended Treatment</h3>
+                        <div id="med-recommendations" class="analysis-box">
+                            Recommendations will appear here...
+                        </div>
+                        <button id="download-med-pdf-btn" class="action-btn secondary" onclick="downloadMedicinePDF()"
+                            disabled>
+                            <i class="fas fa-file-pdf"></i> Download PDF Report
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- Calendar Section -->
+            <!-- Calendar Management Section -->
+            <section id="calendar" class="tab-content">
+                <header>
+                    <h1>Manage Availability</h1>
+                    <p>Mark your specific slots as Available or Unavailable.</p>
+                </header>
+                <div class="calendar-controls">
+                    <div class="management-panel">
+                        <label>Select Date:</label>
+                        <input type="date" id="manage-date" onchange="loaddocSlots()">
+                    </div>
+                </div>
+
+                <div class="shifts-container">
+                    <div class="shift-block">
+                        <h3>Morning Shift (10:00 - 13:00)</h3>
+                        <div id="slots-morning" class="slots-grid"></div>
+                    </div>
+
+                    <div class="shift-block">
+                        <h3>Evening Shift (17:00 - 21:00)</h3>
+                        <div id="slots-evening" class="slots-grid"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+
+</html>
